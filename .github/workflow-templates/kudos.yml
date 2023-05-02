@@ -3,9 +3,12 @@ on:
   push:
     branches: [$default-branch]
 
+env:
+  KUDOS_STORAGE_TOKEN: KUDOS_STORAGE_TOKEN                   # set this to your preferred AWS region, e.g. us-west-1
+
 jobs:
   kudos:
-    name: Find contributors and Ink Kudos
+    name: Support your open source team
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -14,4 +17,5 @@ jobs:
       - uses: LoremLabs/kudos-for-code-action@main
         with:
           search-dir: "."
-          dev-dependencies: "false"
+          destination: "pool"
+          pool-id: ""
