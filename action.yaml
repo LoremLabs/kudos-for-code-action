@@ -41,6 +41,7 @@ runs:
     - uses: actions/setup-node@v3
       with: 
         node-version: 18
+        cache: pnpm
     - name: Install dependencies with pnpm
       run: |
         pnpm i
@@ -86,6 +87,7 @@ runs:
       if: contains(inputs.destination, 'pool')
       run: |
         echo "::group::Check requirements"
+
         if [ -z "${{ inputs.pool-id }}" ]; then
           echo "Missing input: pool-id"
           exit 1
@@ -94,6 +96,11 @@ runs:
           echo "Missing input: setler-keys"
           exit 1
         fi
+        if [ -z "${{ inputs.pool-storage-token }}" ]; then
+          echo "Missing input: pool-storage-token"
+          exit 1
+        fi
+
         echo "::endgroup::"
       shell: bash
 
@@ -130,6 +137,7 @@ runs:
       if: contains(inputs.destination, 'pool')
       env:
         SETLER_KEYS_0: ${{ inputs.setler-keys }}
+        KUDOS_STORAGE_TOKEN: ${{ inputs.pool-storage-token }}
       run: |
         echo "::group::Ink Kudos via Pool"
 
