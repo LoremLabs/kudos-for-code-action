@@ -102,7 +102,7 @@ runs:
       run: |
         echo "::group::Ink Kudos via Pool"
 
-        npx @loremlabs/setler@latest pool ink --poolId=${{ inputs.pool-id }} --inFile=${ env.KUDOS_OUTFILE }
+        npx @loremlabs/setler@latest pool ink --poolId=${{ inputs.pool-id }} --inFile=${{ env.KUDOS_OUTFILE }}
 
         echo "::endgroup::"
       shell: bash
