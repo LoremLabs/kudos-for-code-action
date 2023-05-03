@@ -85,7 +85,6 @@ runs:
       run: |
         echo "::group::Identify Contributors"
 
-        echo "npx @loremlabs/setler@latest kudos identify ${{ inputs.search-dir }} --outFile="${{ env.KUDOS_OUTFILE }}" ${{ inputs.node-dev-dependencies != 'false' && '--nodeDevDependencies' }} --checks=${{ inputs.identify-checks }} --lang=${{ inputs.identify-langs }}
         npx @loremlabs/setler@latest kudos identify ${{ inputs.search-dir }} --outFile="${{ env.KUDOS_OUTFILE }}" ${{ inputs.node-dev-dependencies != 'false' && '--nodeDevDependencies' }} --checks=${{ inputs.identify-checks }} --lang=${{ inputs.identify-langs }}
 
         echo "::endgroup::"
