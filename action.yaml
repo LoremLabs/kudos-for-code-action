@@ -43,6 +43,10 @@ runs:
     - uses: actions/setup-node@v3
       with: 
         node-version: 18
+    - name: Install dependencies with pnpm
+      run: |
+        pnpm i
+      shell: bash
     - name: Set up action
       run: |
         echo "::group::Set up action"
