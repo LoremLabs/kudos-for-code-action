@@ -14,7 +14,7 @@ inputs:
     required: true    
   pool-id:
     description: "PoolId to save kudos to at external pool service."
-    default: ""
+    default: ""    
   node-dev-dependencies:
     description: Identify contributors from devDependecies (Node.js)
     default: "true"
@@ -24,14 +24,10 @@ inputs:
   identify-langs:
     description: Which languages should we search for? (nodejs)
     default: "nodejs"
-  KUDOS_STORAGE_TOKEN:
-    description: Kudos storage token
-    default: ""
-    required: true
-  SETLER_KEYS_0:
+  setler-keys: 
+    # generate with `npx @loremlabs/setler wallet keys env --filter kudos`
     description: Setler Kudos Keys
     default: ""
-    required: true    
 
 runs:
   using: composite
@@ -77,6 +73,21 @@ runs:
         echo "::endgroup::"
       shell: bash
 
+    - name: Check requirements
+      if: contains(inputs.destination, 'pool')
+      run: |
+        echo "::group::Check requirements"
+        if [ -z "${{ inputs.pool-id }}" ]; then
+          echo "Missing input: pool-id"
+          exit 1
+        fi
+        if [ -z "${{ inputs.setler-keys }}" ]; then
+          echo "Missing input: setler-keys"
+          exit 1
+        fi
+        echo "::endgroup::"
+      shell: bash
+
     - name: Download last artifact
       if: contains(inputs.destination, 'artifact')      
       # Not using actions/download-artifact as it doesn't let us specify the "source" of artifact.
@@ -109,12 +120,11 @@ runs:
     - name: Ink Kudos via Pool
       if: contains(inputs.destination, 'pool')
       env:
-        KUDOS_STORAGE_TOKEN: ${{ inputs.KUDOS_STORAGE_TOKEN }}
-        SETLER_KEYS_0: ${{ inputs.SETLER_KEYS_0 }}
+        SETLER_KEYS_0: ${{ inputs.setler-keys }}
       run: |
         echo "::group::Ink Kudos via Pool"
 
-        npx @loremlabs/setler@latest pool ink --poolId=${{ inputs.pool-id }} --inFile=${{ env.KUDOS_OUTFILE }}
+        npx @loremlabs/setler@latest pool ink --poolId="${{ inputs.pool-id }}" --inFile="${{ env.KUDOS_OUTFILE }}"
 
         echo "::endgroup::"
       shell: bash
