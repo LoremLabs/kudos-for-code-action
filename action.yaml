@@ -79,10 +79,10 @@ runs:
         echo "::group::Identify Contributors"
 
         outFile="${{ env.KUDOS_DIR }}/${{ env.KUDOS_COHORT }}.ndjson"
-        echo ${{ outFile }}
+        echo ${ outFile }
 
-        echo npx @loremlabs/setler@latest kudos identify ${{ inputs.search-dir }} --outFile=${{ outFile }} ${{ inputs.node-dev-dependencies != 'false' && '--nodeDevDependencies' }} --checks=${{ inputs.identify-checks }} --lang=${{ inputs.identify-langs }}
-        npx @loremlabs/setler@latest kudos identify ${{ inputs.search-dir }} --outFile=${{ outFile }} ${{ inputs.node-dev-dependencies != 'false' && '--nodeDevDependencies' }} --checks=${{ inputs.identify-checks }} --lang=${{ inputs.identify-langs }}
+        echo npx @loremlabs/setler@latest kudos identify ${{ inputs.search-dir }} --outFile=${ outFile } ${{ inputs.node-dev-dependencies != 'false' && '--nodeDevDependencies' }} --checks=${{ inputs.identify-checks }} --lang=${{ inputs.identify-langs }}
+        npx @loremlabs/setler@latest kudos identify ${{ inputs.search-dir }} --outFile=${ outFile } ${{ inputs.node-dev-dependencies != 'false' && '--nodeDevDependencies' }} --checks=${{ inputs.identify-checks }} --lang=${{ inputs.identify-langs }}
 
         echo "::endgroup::"
       shell: bash
@@ -101,7 +101,7 @@ runs:
 
         outFile="${{ env.KUDOS_DIR }}/${{ env.KUDOS_COHORT }}.ndjson"
 
-        npx @loremlabs/setler@latest pool ink --poolId=${{ inputs.pool-id }} --inFile=${outFile}
+        npx @loremlabs/setler@latest pool ink --poolId=${{ inputs.pool-id }} --inFile=${ outFile }
 
         echo "::endgroup::"
       shell: bash
