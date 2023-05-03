@@ -38,14 +38,12 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: pnpm/action-setup@v2
-      with: { version: 8 }
     - uses: actions/setup-node@v3
       with: 
         node-version: 18
     - name: Install dependencies with pnpm
       run: |
-        pnpm i --no-frozen-lockfile
+        pnpm i
       shell: bash
     - name: Set up action
       run: |
