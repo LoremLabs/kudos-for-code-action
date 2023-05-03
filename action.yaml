@@ -45,7 +45,7 @@ runs:
         node-version: 18
     - name: Install dependencies with pnpm
       run: |
-        pnpm i
+        pnpm i --no-frozen-lockfile
       shell: bash
     - name: Set up action
       run: |
