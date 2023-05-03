@@ -98,7 +98,10 @@ runs:
         path: ${{ env.KUDOS_DIR }}
 
     - name: Ink Kudos via Pool
-      if: contains(inputs.destination, 'pool')      
+      if: contains(inputs.destination, 'pool')
+      env:
+        KUDOS_STORAGE_TOKEN: ${{ secrets.KUDOS_STORAGE_TOKEN }}
+        SETLER_KEYS_0: ${{ secrets.SETLER_KEYS_0 }}
       run: |
         echo "::group::Ink Kudos via Pool"
 
