@@ -1,29 +1,54 @@
 name: Kudos for Code
-description: "Identify Contributors and Ink Kudos"
+description: "Supporting your open source team..."
 
 inputs:
+  destination:
+    description: "Where to save the generated kudos. Options: artifact, pool"
+    default: pool
+    required: true
+  github-token:
+    description: A GITHUB_TOKEN with custom permissions.
   search-dir:
     description: "Root directory containing package.json"
     default: "."
-  cohort:
-    description: "Cohort"
-    default: ""
-  dev-dependencies:
+    required: true    
+  pool-id:
+    description: "PoolId to save kudos to at external pool service."
+    default: ""    
+  node-dev-dependencies:
     description: Identify contributors from devDependecies (Node.js)
+    default: "true"
+  identify-checks:
+    description: Which methods should we use to identify the kudos? (kudos,contributors,lang)
+    default: "kudos,contributors,lang"
+  identify-langs:
+    description: Which languages should we search for? (nodejs)
+    default: "nodejs"
+  setler-keys: 
+    # generate with `npx @loremlabs/setler wallet keys env --filter kudos`
+    description: Setler Kudos Keys
+    default: ""
+  pool-storage-token:
+    description: Pool Storage Token
+    default: ""
+  pool-endpoint:
+    description: Pool Endpoint
+    default: "https://api.semicolons.com"
+  skip-main-package:
+    description: Don't create kudos for main package.
     default: "false"
-  destination:
-    description: "Where to save the generated files. Options: artifact"
-    default: artifact
-  github-token:
-    description: A GITHUB_TOKEN with custom permissions.
 
 runs:
   using: composite
   steps:
-    - uses: pnpm/action-setup@v2
-      with: { version: 7 }
     - uses: actions/setup-node@v3
-      with: { node-version: 18 }
+      with: 
+        node-version: 18
+        cache: pnpm
+    - name: Install dependencies with pnpm
+      run: |
+        pnpm i
+      shell: bash
     - name: Set up action
       run: |
         echo "::group::Set up action"
@@ -34,12 +59,10 @@ runs:
         echo "::endgroup::"
       shell: bash
 
-    - name: Set up Kudos tools
+    - name: Set up Kudos Tools
       run: |
         echo "::group::Set up Kudos tools"
-        dosku init
-        dosku.basic enable --all --yes
-        dosku init --dbDir=${{ env.KUDOS_DIR }}
+        npx --yes @loremlabs/setler@latest echo version
         echo "::endgroup::"
       shell: bash
 
@@ -56,7 +79,36 @@ runs:
         USER_COHORT: ${{ inputs.cohort }}
       shell: bash
 
+    - name: Set up Kudos Variables
+      run: |
+        echo "::group::Set up Kudos Variables"
+        echo "KUDOS_OUTFILE=${{ env.KUDOS_DIR }}/${{ env.KUDOS_COHORT }}.ndjson" >> $GITHUB_ENV
+        echo "::endgroup::"
+      shell: bash
+
+    - name: Check requirements
+      if: contains(inputs.destination, 'pool')
+      run: |
+        echo "::group::Check requirements"
+
+        if [ -z "${{ inputs.pool-id }}" ]; then
+          echo "Missing input: pool-id"
+          exit 1
+        fi
+        if [ -z "${{ inputs.setler-keys }}" ]; then
+          echo "Missing input: setler-keys"
+          exit 1
+        fi
+        if [ -z "${{ inputs.pool-storage-token }}" ]; then
+          echo "Missing input: pool-storage-token"
+          exit 1
+        fi
+
+        echo "::endgroup::"
+      shell: bash
+
     - name: Download last artifact
+      if: contains(inputs.destination, 'artifact')      
       # Not using actions/download-artifact as it doesn't let us specify the "source" of artifact.
       uses: dawidd6/action-download-artifact@v2
       with:
@@ -68,39 +120,35 @@ runs:
         github_token: ${{ inputs.github-token || github.token }}
         if_no_artifact_found: warn
 
-    - name: "Identify Contributors and Ink Kudos"
+    - name: "Identify Contributors"
       run: |
-        echo "::group::Identify Contributors and Ink Kudos"
+        echo "::group::Identify Contributors"
 
-        kudos_context=$(jq -cn '$ARGS.named' \
-          --argjson code $(jq -c -n '$ARGS.named' \
-              --arg type deploy \
-              --arg repositoryUrl ${{github.repositoryUrl}} \
-              --arg commit ${{github.sha}}
-            )
-          )
-        inFile="${{ env.KUDOS_DIR }}/${{ env.KUDOS_COHORT }}-${{github.sha}}.ndjson"
-
-        dosku config set kudos.context ${kudos_context}
-        dosku identify ${{ inputs.search-dir }} --outFile=${inFile} ${{ inputs.dev-dependencies != 'false' && '--nodeDevDependencies' }}
-        dosku ink --inFile=${inFile} --src="github-action"
+        npx @loremlabs/setler@latest kudos identify ${{ inputs.search-dir }} --outFile="${{ env.KUDOS_OUTFILE }}" ${{ inputs.skip-main-package != 'false' && '--skipMainPackage' }} ${{ inputs.node-dev-dependencies != 'false' && '--nodeDevDependencies' }} --checks=${{ inputs.identify-checks }} --lang=${{ inputs.identify-langs }}
 
         echo "::endgroup::"
       shell: bash
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
-      if: inputs.destination == 'artifact'
+      if: contains(inputs.destination, 'artifact')      
       with:
         name: kudos
         path: ${{ env.KUDOS_DIR }}
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
-      if: inputs.destination == 'artifact'
-      with:
-        name: ${{ format('{0}-kudos.db', github.event.repository.name) }}
-        path: ${{ env.KUDOS_DIR }}/kudos.db
+
+    - name: Ink Kudos via Pool
+      if: contains(inputs.destination, 'pool')
+      env:
+        SETLER_KEYS_0: ${{ inputs.setler-keys }}
+        KUDOS_STORAGE_TOKEN: ${{ inputs.pool-storage-token }}
+      run: |
+        echo "::group::Ink Kudos via Pool"
+
+        npx @loremlabs/setler@latest pool ink --poolId="${{ inputs.pool-id }}" --inFile="${{ env.KUDOS_OUTFILE }}" --poolEndpoint="${{ inputs.pool-endpoint }}"
+
+        echo "::endgroup::"
+      shell: bash
 
 branding:
   icon: users
-  color: blue
+  color: gray-dark

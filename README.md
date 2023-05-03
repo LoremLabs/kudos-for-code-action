@@ -1,6 +1,6 @@
 # Kudos for Code GitHub Action
 
-GitHub Action for https://github.com/LoremLabs/kudos-for-code
+GitHub Action for https://github.com/LoremLabs/kudos/tree/main/kudos-for-code
 
 ## Example
 
@@ -11,7 +11,7 @@ on:
 
 jobs:
   kudos:
-    name: Find contributors and Ink Kudos
+    name: Identify contributors, calculate and record kudos
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
