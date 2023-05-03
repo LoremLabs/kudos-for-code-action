@@ -24,6 +24,15 @@ inputs:
   identify-langs:
     description: Which languages should we search for? (nodejs)
     default: "nodejs"
+  KUDOS_STORAGE_TOKEN:
+    description: Kudos storage token
+    default: ""
+    required: true
+  SETLER_KEYS_0:
+    description: Setler Kudos Keys
+    default: ""
+    required: true    
+
 runs:
   using: composite
   steps:
@@ -100,8 +109,8 @@ runs:
     - name: Ink Kudos via Pool
       if: contains(inputs.destination, 'pool')
       env:
-        KUDOS_STORAGE_TOKEN: ${{ secrets.KUDOS_STORAGE_TOKEN }}
-        SETLER_KEYS_0: ${{ secrets.SETLER_KEYS_0 }}
+        KUDOS_STORAGE_TOKEN: ${{ inputs.KUDOS_STORAGE_TOKEN }}
+        SETLER_KEYS_0: ${{ inputs.SETLER_KEYS_0 }}
       run: |
         echo "::group::Ink Kudos via Pool"
 
