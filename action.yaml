@@ -31,6 +31,9 @@ inputs:
   pool-storage-token:
     description: Pool Storage Token
     default: ""
+  pool-endpoint:
+    description: Pool Endpoint
+    default: "https://api.semicolons.com"
   skip-main-package:
     description: Don't create kudos for main package.
     default: "false"
@@ -141,7 +144,7 @@ runs:
       run: |
         echo "::group::Ink Kudos via Pool"
 
-        npx @loremlabs/setler@latest pool ink --poolId="${{ inputs.pool-id }}" --inFile="${{ env.KUDOS_OUTFILE }}"
+        npx @loremlabs/setler@latest pool ink --poolId="${{ inputs.pool-id }}" --inFile="${{ env.KUDOS_OUTFILE }}" --poolEndpoint="${{ inputs.pool-endpoint }}"
 
         echo "::endgroup::"
       shell: bash
