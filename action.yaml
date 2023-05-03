@@ -28,6 +28,9 @@ inputs:
     # generate with `npx @loremlabs/setler wallet keys env --filter kudos`
     description: Setler Kudos Keys
     default: ""
+  pool-storage-token:
+    description: Pool Storage Token
+    default: ""
   skip-main-package:
     description: Don't create kudos for main package.
     default: "false"
@@ -38,7 +41,9 @@ runs:
     - uses: pnpm/action-setup@v2
       with: { version: 7 }
     - uses: actions/setup-node@v3
-      with: { node-version: 18 }
+      with: 
+        node-version: 18
+        cache: 'pnpm'    
     - name: Set up action
       run: |
         echo "::group::Set up action"
