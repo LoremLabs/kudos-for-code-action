@@ -41,14 +41,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: actions/setup-node@v3
-      with: 
-        node-version: 18
-        cache: pnpm
-    - name: Install dependencies with pnpm
-      run: |
-        pnpm i
-      shell: bash
     - name: Set up action
       run: |
         echo "::group::Set up action"

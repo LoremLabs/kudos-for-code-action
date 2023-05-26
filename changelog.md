@@ -9,6 +9,12 @@ Subsections: (Added, Changed, Deprecated, Removed, Fixed, Security)
 
 ## [Unreleased]
 
+## [0.0.5]
+
+### Removed
+
+- Remove actions/setup-node@v3, pnpm/action-setup@v2 for more control at caller level.
+
 ## [0.0.4]
 
 ### Added
