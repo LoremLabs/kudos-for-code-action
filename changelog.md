@@ -11,9 +11,13 @@ Subsections: (Added, Changed, Deprecated, Removed, Fixed, Security)
 
 ## [0.0.5]
 
+### Changed
+
+ - Upgraded @loremlabs/setler to `0.0.8`
+
 ### Removed
 
-- Remove actions/setup-node@v3, pnpm/action-setup@v2 for more control at caller level.
+- Remove `actions/setup-node@v3`, `pnpm/action-setup@v2` for more control at caller level.
 
 ## [0.0.4]
 
