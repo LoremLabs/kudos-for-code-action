@@ -6,6 +6,9 @@ GitHub Action for https://github.com/LoremLabs/kudos/tree/main/kudos-for-code
 
 ```yaml
 name: Kudos for Code
+defaults:
+  run:
+    working-directory: .
 on:
   push:
     branches: ['main']
@@ -13,13 +16,22 @@ on:
 
 jobs:
   kudos:
-    name: Supporting your open source team..
+    name: Supporting your open source team with Kudos.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2
         with: { version: 7 }
-      - uses: LoremLabs/kudos-for-code-action@v0.0.4
+      - uses: actions/setup-node@v3
+        with: 
+          node-version: 18
+          cache: pnpm
+          cache-dependency-path: './pnpm-lock.yaml'
+      - name: Install dependencies with pnpm
+        run: |
+          pnpm i
+        shell: bash
+      - uses: LoremLabs/kudos-for-code-action@v0.0.5
         with:
           search-dir: "."
           destination: "pool"
@@ -27,7 +39,8 @@ jobs:
           setler-keys: ${{ secrets.SETLER_KEYS_0 }}
           pool-storage-token: ${{ secrets.KUDOS_STORAGE_TOKEN }}
           pool-endpoint: "https://api.semicolons.com"
-          
+          node-dev-dependencies: "true"
+
 ```
 
 ## Inputs
