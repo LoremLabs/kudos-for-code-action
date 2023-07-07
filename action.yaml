@@ -18,6 +18,9 @@ inputs:
   node-dev-dependencies:
     description: Identify contributors from devDependecies (Node.js)
     default: "true"
+  identify-type:
+    description: How should we identify Kudos? (sbom, setler)
+    default: "sbom"
   identify-checks:
     description: Which methods should we use to identify the kudos? (kudos,contributors,lang)
     default: "kudos,contributors,lang"
@@ -37,7 +40,7 @@ inputs:
   skip-main-package:
     description: Don't create kudos for main package.
     default: "false"
-
+  
 runs:
   using: composite
   steps:
@@ -50,6 +53,13 @@ runs:
         echo "KUDOS_DIR=$(mkdir -p ../.kudos && cd ../.kudos;pwd)" >> $GITHUB_ENV
         echo "::endgroup::"
       shell: bash
+    
+    - name: Set up Required Tools
+      if: contains(inputs.identify-type, 'sbom')
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b .
+        wget https://github.com/snyk/parlay/releases/download/v0.1.5/parlay_Linux_x86_64.tar.gz
+        tar -xvf parlay_Linux_x86_64.tar.gz
 
     - name: Set up Kudos Tools
       run: |
@@ -112,11 +122,22 @@ runs:
         github_token: ${{ inputs.github-token || github.token }}
         if_no_artifact_found: warn
 
-    - name: "Identify Contributors"
+    - name: "Identify Contributors - Setler"
+      if: contains(inputs.identify-type, 'setler')
       run: |
         echo "::group::Identify Contributors"
 
         npx @loremlabs/setler@latest kudos identify ${{ inputs.search-dir }} --outFile="${{ env.KUDOS_OUTFILE }}" ${{ inputs.skip-main-package != 'false' && '--skipMainPackage' }} ${{ inputs.node-dev-dependencies != 'false' && '--nodeDevDependencies' }} --checks=${{ inputs.identify-checks }} --lang=${{ inputs.identify-langs }}
+
+        echo "::endgroup::"
+      shell: bash
+
+    - name: "Identify Contributors - SBOM"
+      if: contains(inputs.identify-type, 'sbom')
+      run: |
+        echo "::group::Identify Contributors"
+
+        ./scripts/get-repos-from-sbom.sh > "${{ env.KUDOS_OUTFILE }}"
 
         echo "::endgroup::"
       shell: bash
