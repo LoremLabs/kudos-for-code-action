@@ -138,7 +138,7 @@ runs:
       run: |
         echo "::group::Identify Contributors"
 
-        bash ${GITHUB_WORKSPACE}/scripts/get-repos-from-sbom.sh > "${{ env.KUDOS_OUTFILE }}"
+        bash ${github.workspace}/scripts/get-repos-from-sbom.sh > "${{ env.KUDOS_OUTFILE }}"
 
         echo "::endgroup::"
       shell: bash
