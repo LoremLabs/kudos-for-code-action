@@ -57,6 +57,10 @@ runs:
     - name: Set up Required Tools
       if: contains(inputs.identify-type, 'sbom')
       run: |
+        echo "::group::Set up Required Tools"
+        mkdir -p scripts
+        curl -sSfL https://raw.githubusercontent.com/LoremLabs/kudos-for-code-action/feature/sbom/scripts/download-repo-get-weights.sh -o ./scripts/download-repo-get-weights.sh
+        curl -sSfL https://raw.githubusercontent.com/LoremLabs/kudos-for-code-action/feature/sbom/scripts/get-repos-from-sbom.sh -o ./scripts/get-repos-from-sbom.sh
         curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b .
         wget https://github.com/snyk/parlay/releases/download/v0.1.5/parlay_Linux_x86_64.tar.gz
         tar -xvf parlay_Linux_x86_64.tar.gz
