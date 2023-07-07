@@ -47,10 +47,17 @@ runs:
     - name: Set up action
       run: |
         echo "::group::Set up action"
+        echo "KUDOS_DIR=$(mkdir -p ../.kudos && cd ../.kudos;pwd)" >> $GITHUB_ENV
+        echo "::endgroup::"
+      shell: bash
+
+    - name: PNPM install
+      if: contains(inputs.identify-type, 'setler')
+      run: |
+        echo "::group::Set up Required Tools"
         pnpm -C ${{ github.action_path }} install --no-optional
         pnpm --silent -C ${{ github.action_path }} build
         echo "${{ github.action_path }}/node_modules/.bin" >> $GITHUB_PATH
-        echo "KUDOS_DIR=$(mkdir -p ../.kudos && cd ../.kudos;pwd)" >> $GITHUB_ENV
         echo "::endgroup::"
       shell: bash
 
@@ -61,9 +68,13 @@ runs:
         mkdir -p scripts
         curl -sSfL https://raw.githubusercontent.com/LoremLabs/kudos-for-code-action/feature/sbom/scripts/download-repo-get-weights.sh -o ./scripts/download-repo-get-weights.sh
         curl -sSfL https://raw.githubusercontent.com/LoremLabs/kudos-for-code-action/feature/sbom/scripts/get-repos-from-sbom.sh -o ./scripts/get-repos-from-sbom.sh
+        chmod +x ./scripts/download-repo-get-weights.sh
+        chmod +x ./scripts/get-repos-from-sbom.sh
         curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b .
         wget https://github.com/snyk/parlay/releases/download/v0.1.5/parlay_Linux_x86_64.tar.gz
         tar -xvf parlay_Linux_x86_64.tar.gz
+        echo "::endgroup::"
+
       shell: bash
 
     - name: Set up Kudos Tools
