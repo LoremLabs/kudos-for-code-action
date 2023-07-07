@@ -11,10 +11,10 @@ inputs:
   search-dir:
     description: "Root directory containing package.json"
     default: "."
-    required: true    
+    required: true
   pool-id:
     description: "PoolId to save kudos to at external pool service."
-    default: ""    
+    default: ""
   node-dev-dependencies:
     description: Identify contributors from devDependecies (Node.js)
     default: "true"
@@ -27,7 +27,7 @@ inputs:
   identify-langs:
     description: Which languages should we search for? (nodejs)
     default: "nodejs"
-  setler-keys: 
+  setler-keys:
     # generate with `npx @loremlabs/setler wallet keys env --filter kudos`
     description: Setler Kudos Keys
     default: ""
@@ -40,7 +40,7 @@ inputs:
   skip-main-package:
     description: Don't create kudos for main package.
     default: "false"
-  
+
 runs:
   using: composite
   steps:
@@ -53,7 +53,7 @@ runs:
         echo "KUDOS_DIR=$(mkdir -p ../.kudos && cd ../.kudos;pwd)" >> $GITHUB_ENV
         echo "::endgroup::"
       shell: bash
-    
+
     - name: Set up Required Tools
       if: contains(inputs.identify-type, 'sbom')
       run: |
@@ -111,7 +111,7 @@ runs:
       shell: bash
 
     - name: Download last artifact
-      if: contains(inputs.destination, 'artifact')      
+      if: contains(inputs.destination, 'artifact')
       # Not using actions/download-artifact as it doesn't let us specify the "source" of artifact.
       uses: dawidd6/action-download-artifact@v2
       with:
@@ -138,14 +138,14 @@ runs:
       run: |
         echo "::group::Identify Contributors"
 
-        ./scripts/get-repos-from-sbom.sh > "${{ env.KUDOS_OUTFILE }}"
+        bash ${GITHUB_WORKSPACE}/scripts/get-repos-from-sbom.sh > "${{ env.KUDOS_OUTFILE }}"
 
         echo "::endgroup::"
       shell: bash
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
-      if: contains(inputs.destination, 'artifact')      
+      if: contains(inputs.destination, 'artifact')
       with:
         name: kudos
         path: ${{ env.KUDOS_DIR }}
