@@ -162,10 +162,10 @@ runs:
       run: |
         echo "::group::Ink Kudos via Pool"
 
-        local lines=5000
-        local count=1
-        local file_prefix="ndjson_file"
-        local generated_files=()
+        lines=5000
+        count=1
+        file_prefix="ndjson_file"
+        generated_files=()
 
         while IFS= read -r line; do
             # Write 10 lines to a new file
