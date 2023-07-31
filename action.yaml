@@ -66,7 +66,7 @@ runs:
       run: |
         echo "::group::Set up Required Tools"
         wget https://github.com/LoremLabs/kudos-for-code/releases/download/v0.0.2/kudos-for-code-v0.0.2-linux-amd64.tar.gz
-        tar tar -zxvf kudos-for-code-v0.0.2-linux-amd64.tar.gz
+        tar -zxvf kudos-for-code-v0.0.2-linux-amd64.tar.gz
         echo "::endgroup::"
 
       shell: bash
@@ -142,8 +142,6 @@ runs:
       run: |
         echo "::group::Identify Contributors"
 
-        curl -LO https://github.com/LoremLabs/kudos-for-code/releases/download/v0.0.2/kudos-for-code-v0.0.2-linux-amd64.tar.gz
-        tar -zxvf kudos-for-code-v0.0.2-linux-amd64.tar.gz
         ./kudos-for-code projectName $HOME/.ort/ort-results/analyzer-result.json  > "${{ env.KUDOS_OUTFILE }}"
 
         echo "::endgroup::"
