@@ -162,7 +162,30 @@ runs:
       run: |
         echo "::group::Ink Kudos via Pool"
 
-        npx @loremlabs/setler@latest pool ink --poolId="${{ inputs.pool-id }}" --inFile="${{ env.KUDOS_OUTFILE }}" --poolEndpoint="${{ inputs.pool-endpoint }}"
+        local lines=5000
+        local count=1
+        local file_prefix="ndjson_file"
+        local generated_files=()
+
+        while IFS= read -r line; do
+            # Write 10 lines to a new file
+            if [ $((count % lines)) -eq 1 ]; then
+                filename="${file_prefix}_${count}.ndjson"
+                echo "$line" > "$filename"
+                generated_files+=("$filename")
+            else
+                echo "$line" >> "$filename"
+            fi
+
+            count=$((count + 1))
+
+            npx @loremlabs/setler@latest pool ink --poolId="${{ inputs.pool-id }}" --inFile="$filename" --poolEndpoint="${{ inputs.pool-endpoint }}"
+        done < "${{ env.KUDOS_OUTFILE }}"
+
+        # Clean up: Remove the generated files
+        for file in "${generated_files[@]}"; do
+            rm "$file"
+        done
 
         echo "::endgroup::"
       shell: bash
