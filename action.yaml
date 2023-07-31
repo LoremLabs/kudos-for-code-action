@@ -65,14 +65,8 @@ runs:
       if: contains(inputs.identify-type, 'sbom')
       run: |
         echo "::group::Set up Required Tools"
-        mkdir -p scripts
-        curl -sSfL https://raw.githubusercontent.com/LoremLabs/kudos-for-code-action/feature/sbom/scripts/download-repo-get-weights.sh -o ./scripts/download-repo-get-weights.sh
-        curl -sSfL https://raw.githubusercontent.com/LoremLabs/kudos-for-code-action/feature/sbom/scripts/get-repos-from-sbom.sh -o ./scripts/get-repos-from-sbom.sh
-        chmod +x ./scripts/download-repo-get-weights.sh
-        chmod +x ./scripts/get-repos-from-sbom.sh
-        curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b .
-        wget https://github.com/snyk/parlay/releases/download/v0.1.5/parlay_Linux_x86_64.tar.gz
-        tar -xvf parlay_Linux_x86_64.tar.gz
+        wget https://github.com/LoremLabs/kudos-for-code/releases/download/v0.0.2/kudos-for-code-v0.0.2-linux-amd64.tar.gz
+        tar tar -zxvf kudos-for-code-v0.0.2-linux-amd64.tar.gz
         echo "::endgroup::"
 
       shell: bash
@@ -138,25 +132,21 @@ runs:
         github_token: ${{ inputs.github-token || github.token }}
         if_no_artifact_found: warn
 
-    - name: "Identify Contributors - Setler"
-      if: contains(inputs.identify-type, 'setler')
+    - name: Identify Dependencies - ORT
+      uses: oss-review-toolkit/ort-ci-github-action@v1
+      with:
+        image: ghcr.io/sangheestyle/ort:latest
+        run: cache-dependencies, analyzer, upload-results
+
+    - name: Identify Contributors - Kudos for Code
       run: |
         echo "::group::Identify Contributors"
 
-        npx @loremlabs/setler@latest kudos identify ${{ inputs.search-dir }} --outFile="${{ env.KUDOS_OUTFILE }}" ${{ inputs.skip-main-package != 'false' && '--skipMainPackage' }} ${{ inputs.node-dev-dependencies != 'false' && '--nodeDevDependencies' }} --checks=${{ inputs.identify-checks }} --lang=${{ inputs.identify-langs }}
+        curl -LO https://github.com/LoremLabs/kudos-for-code/releases/download/v0.0.2/kudos-for-code-v0.0.2-linux-amd64.tar.gz
+        tar -zxvf kudos-for-code-v0.0.2-linux-amd64.tar.gz
+        ./kudos-for-code projectName $HOME/.ort/ort-results/analyzer-result.json  > "${{ env.KUDOS_OUTFILE }}"
 
         echo "::endgroup::"
-      shell: bash
-
-    - name: "Identify Contributors - SBOM"
-      if: contains(inputs.identify-type, 'sbom')
-      run: |
-        echo "::group::Identify Contributors"
-
-        bash ${{github.workspace}}/scripts/get-repos-from-sbom.sh > "${{ env.KUDOS_OUTFILE }}"
-
-        echo "::endgroup::"
-      shell: bash
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
