@@ -147,6 +147,7 @@ runs:
         ./kudos-for-code projectName $HOME/.ort/ort-results/analyzer-result.json  > "${{ env.KUDOS_OUTFILE }}"
 
         echo "::endgroup::"
+      shell: bash
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
