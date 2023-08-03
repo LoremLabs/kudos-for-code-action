@@ -65,8 +65,8 @@ runs:
       if: contains(inputs.identify-type, 'sbom')
       run: |
         echo "::group::Set up Required Tools"
-        wget https://github.com/LoremLabs/kudos-for-code/releases/download/v0.0.3/kudos-for-code-v0.0.3-linux-amd64.tar.gz
-        tar -zxvf kudos-for-code-v0.0.3-linux-amd64.tar.gz
+        wget https://github.com/LoremLabs/kudos-for-code/releases/download/v1.0.0/kudos-for-code-v1.0.0-linux-amd64.tar.gz
+        tar -zxvf kudos-for-code-v1.0.0-linux-amd64.tar.gz
         echo "::endgroup::"
 
       shell: bash
@@ -142,7 +142,12 @@ runs:
       run: |
         echo "::group::Identify Contributors"
 
-        ./kudos-for-code projectName $HOME/.ort/ort-results/analyzer-result.json  > "${{ env.KUDOS_OUTFILE }}"
+        ./kudos-for-code generate \
+          --nomerges true \
+          --validemails true \
+          --limitdepth 2 \
+          --projectname ${{ github.event.repository.name }} \
+          --inputfilepath $HOME/.ort/ort-results/analyzer-result.json > "${{ env.KUDOS_OUTFILE }}"
 
         echo "::endgroup::"
       shell: bash
