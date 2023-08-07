@@ -138,16 +138,22 @@ runs:
         image: ghcr.io/sangheestyle/ort:latest
         run: cache-dependencies, analyzer, upload-results
 
-    - name: Identify Contributors - Kudos for Code
+    - name: Identify Contributors and Ink Kudos via Pool - Kudos for Code
+      if: contains(inputs.destination, 'pool')
+      env:
+        SETLER_KEYS_0: ${{ inputs.setler-keys }}
+        KUDOS_STORAGE_TOKEN: ${{ inputs.pool-storage-token }}
       run: |
-        echo "::group::Identify Contributors"
+        echo "::group::Identify Contributors and Ink Kudos via Pool"
 
         ./kudos-for-code generate \
           --nomerges true \
           --validemails true \
           --limitdepth 2 \
           --projectname ${{ github.event.repository.name }} \
-          --inputfilepath $HOME/.ort/ort-results/analyzer-result.json > "${{ env.KUDOS_OUTFILE }}"
+          --inputfilepath $HOME/.ort/ort-results/analyzer-result.json > "${{ env.KUDOS_OUTFILE }}" \
+        | ./kudos-for-code ink \
+          -poolId "${{ inputs.pool-id }}"
 
         echo "::endgroup::"
       shell: bash
@@ -158,42 +164,6 @@ runs:
       with:
         name: kudos
         path: ${{ env.KUDOS_DIR }}
-
-    - name: Ink Kudos via Pool
-      if: contains(inputs.destination, 'pool')
-      env:
-        SETLER_KEYS_0: ${{ inputs.setler-keys }}
-        KUDOS_STORAGE_TOKEN: ${{ inputs.pool-storage-token }}
-      run: |
-        echo "::group::Ink Kudos via Pool"
-
-        lines=5000
-        count=1
-        file_prefix="ndjson_file"
-        generated_files=()
-
-        while IFS= read -r line; do
-            # Write 10 lines to a new file
-            if [ $((count % lines)) -eq 1 ]; then
-                filename="${file_prefix}_${count}.ndjson"
-                echo "$line" > "$filename"
-                generated_files+=("$filename")
-            else
-                echo "$line" >> "$filename"
-            fi
-
-            count=$((count + 1))
-
-            npx @loremlabs/setler@latest pool ink --poolId="${{ inputs.pool-id }}" --inFile="$filename" --poolEndpoint="${{ inputs.pool-endpoint }}"
-        done < "${{ env.KUDOS_OUTFILE }}"
-
-        # Clean up: Remove the generated files
-        for file in "${generated_files[@]}"; do
-            rm "$file"
-        done
-
-        echo "::endgroup::"
-      shell: bash
 
 branding:
   icon: users
