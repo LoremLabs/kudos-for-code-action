@@ -153,7 +153,7 @@ runs:
           --projectname ${{ github.event.repository.name }} \
           --inputfilepath $HOME/.ort/ort-results/analyzer-result.json > "${{ env.KUDOS_OUTFILE }}" \
         | ./kudos-for-code ink \
-          -poolId "${{ inputs.pool-id }}"
+          --poolId "${{ inputs.pool-id }}"
 
         echo "::endgroup::"
       shell: bash
