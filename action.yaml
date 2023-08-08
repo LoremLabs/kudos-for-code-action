@@ -40,6 +40,21 @@ inputs:
   skip-main-package:
     description: Don't create kudos for main package.
     default: "false"
+  generate-nomerges:
+    description: Exclude merge commits during generating Kudos from repo.
+    default: true
+  generate-validemails:
+    description: Include only valid emails during generating Kudos from repo.
+    default: true
+  generate-limitdepth:
+    description: Limit of dependency depth during generating Kudos from repo.
+    default: 2
+  ink-validateResult:
+    description: Validate the ink result from pool compared to the result from Kudos generation.
+    default: true
+  ink-chunkSize:
+    description: Chunk size for ink request.
+    default: 1000
 
 runs:
   using: composite
@@ -147,13 +162,16 @@ runs:
         echo "::group::Identify Contributors and Ink Kudos via Pool"
 
         ./kudos-for-code generate \
-          --nomerges true \
-          --validemails true \
-          --limitdepth 2 \
+          --nomerges "${{ input.generate-nomerges }}" \
+          --validemails "${{ input.generate-validemails }}" \
+          --limitdepth "${{ input.generate-limitdepth }}" \
           --projectname ${{ github.event.repository.name }} \
           --inputfilepath ${{ env.ORT_RESULTS_ANALYZER_PATH }} \
         | ./kudos-for-code ink \
-          --poolId "${{ inputs.pool-id }}"
+          --poolId "${{ inputs.pool-id }}" \
+          --poolEndpoint "${{ inputs.pool-endpoint }}" \
+          --validateResult ${{ input.ink-validateResult }}" \
+          --chunkSize ${{ input.ink-chunkSize }}"
 
         echo "::endgroup::"
       shell: bash
