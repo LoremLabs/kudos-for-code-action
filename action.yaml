@@ -162,16 +162,16 @@ runs:
         echo "::group::Identify Contributors and Ink Kudos via Pool"
 
         ./kudos-for-code generate \
-          --nomerges "${{ input.generate-nomerges }}" \
-          --validemails "${{ input.generate-validemails }}" \
-          --limitdepth "${{ input.generate-limitdepth }}" \
+          --nomerges "${{ inputs.generate-nomerges }}" \
+          --validemails "${{ inputs.generate-validemails }}" \
+          --limitdepth "${{ inputs.generate-limitdepth }}" \
           --projectname ${{ github.event.repository.name }} \
           --inputfilepath ${{ env.ORT_RESULTS_ANALYZER_PATH }} \
         | ./kudos-for-code ink \
           --poolId "${{ inputs.pool-id }}" \
           --poolEndpoint "${{ inputs.pool-endpoint }}" \
-          --validateResult ${{ input.ink-validateResult }}" \
-          --chunkSize ${{ input.ink-chunkSize }}"
+          --validateResult ${{ inputs.ink-validateResult }}" \
+          --chunkSize ${{ inputs.ink-chunkSize }}"
 
         echo "::endgroup::"
       shell: bash
