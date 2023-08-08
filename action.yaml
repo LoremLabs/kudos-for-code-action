@@ -151,7 +151,7 @@ runs:
           --validemails true \
           --limitdepth 2 \
           --projectname ${{ github.event.repository.name }} \
-          --inputfilepath $HOME/.ort/ort-results/analyzer-result.json > "${{ env.KUDOS_OUTFILE }}" \
+          --inputfilepath $HOME/.ort/ort-results/analyzer-result.json \
         | ./kudos-for-code ink \
           --poolId "${{ inputs.pool-id }}"
 
