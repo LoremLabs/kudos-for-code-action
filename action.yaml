@@ -131,16 +131,16 @@ runs:
           exit 1
         fi
 
-        output=$(npx @loremlabs/setler@latest pool summary "${{ inputs.pool-id }}" 2>&1)
+        # output=$(npx @loremlabs/setler@latest pool summary "${{ inputs.pool-id }}" 2>&1)
 
-        # Check the exit status
-        if [ $? -eq 1 ]; then
-          echo "Command exited with status code 1 (error)."
-          echo "Output of your_command:"
-          echo "$output"
-        else
-          echo "Given pool-id is valid."
-        fi
+        # # Check the exit status
+        # if [ $? -eq 1 ]; then
+        #   echo "Command exited with status code 1 (error)."
+        #   echo "Output of your_command:"
+        #   echo "$output"
+        # else
+        #   echo "Given pool-id is valid."
+        # fi
 
         echo "::endgroup::"
       shell: bash
