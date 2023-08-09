@@ -181,8 +181,8 @@ runs:
         | ./kudos-for-code ink \
           --poolId "${{ inputs.pool-id }}" \
           --poolEndpoint "${{ inputs.pool-endpoint }}" \
-          --validateResult ${{ inputs.ink-validateResult }}" \
-          --chunkSize ${{ inputs.ink-chunkSize }}"
+          --validateResult "${{ inputs.ink-validateResult }}" \
+          --chunkSize "${{ inputs.ink-chunkSize }}"
 
         echo "::endgroup::"
       shell: bash
