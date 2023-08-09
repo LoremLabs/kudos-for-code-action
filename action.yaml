@@ -59,6 +59,13 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        # required for setler pool list
+        sudo apt-get install -y gnome-keyring
+      shell: bash
+
     - name: Set up action
       run: |
         echo "::group::Set up action"
@@ -128,6 +135,25 @@ runs:
         fi
         if [ -z "${{ inputs.pool-storage-token }}" ]; then
           echo "Missing input: pool-storage-token"
+          exit 1
+        fi
+
+        echo "::endgroup::"
+      shell: bash
+
+    - name: Validate pool-id
+      if: contains(inputs.destination, 'pool')
+      env:
+        SETLER_KEYS_0: ${{ inputs.setler-keys }}
+        KUDOS_STORAGE_TOKEN: ${{ inputs.pool-storage-token }}
+      run: |
+        echo "::group::Validate pool-id"
+        npx @loremlabs/setler@latest pool list --poolId="${{ inputs.pool-id }}" --quiet
+
+        if [ $? -eq 0 ]; then
+          echo "Given pool-id is valid."
+        else
+          echo "Given pool-id is invalid."
           exit 1
         fi
 
