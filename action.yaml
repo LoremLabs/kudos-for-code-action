@@ -131,7 +131,7 @@ runs:
           exit 1
         fi
 
-        npx @loremlabs/setler@0.0.18 pool list --quiet --poolId "${{ inputs.pool-id }}"
+        npx @loremlabs/setler@latest pool list --quiet --poolId "${{ inputs.pool-id }}"
         if [ $? -eq 0 ]; then
           echo "Given pool-id is valid."
         fi
