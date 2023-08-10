@@ -48,7 +48,7 @@ inputs:
     default: 2
   ink-validateResult:
     description: Validate the ink result from pool compared to the result from Kudos generation.
-    default: true
+    default: false
   ink-chunkSize:
     description: Chunk size for ink request.
     default: 1000
