@@ -87,8 +87,8 @@ runs:
       if: contains(inputs.identify-type, 'sbom')
       run: |
         echo "::group::Set up Required Tools"
-        wget https://github.com/LoremLabs/kudos-for-code/releases/download/v1.1.1/kudos-for-code_1.1.1_linux_amd64.tar.gz
-        tar -zxvf kudos-for-code_1.1.1_linux_amd64.tar.gz
+        wget https://github.com/LoremLabs/kudos-for-code/releases/download/v1.2.1/kudos-for-code_1.2.1_linux_amd64.tar.gz
+        tar -zxvf kudos-for-code_1.2.1_linux_amd64.tar.gz
         echo "::endgroup::"
 
       shell: bash
