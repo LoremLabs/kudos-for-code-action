@@ -15,9 +15,6 @@ inputs:
   pool-id:
     description: "PoolId to save kudos to at external pool service."
     default: ""
-  node-dev-dependencies:
-    description: Identify contributors from devDependecies (Node.js)
-    default: "true"
   identify-type:
     description: How should we identify Kudos? (sbom, setler)
     default: "sbom"

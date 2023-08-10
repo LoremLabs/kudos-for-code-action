@@ -1,37 +1,23 @@
 # Kudos for Code GitHub Action
 
-GitHub Action for https://github.com/LoremLabs/kudos/tree/main/kudos-for-code
+Give credit where credit is due! The **Kudos for Code** GitHub Action, crafted by [LoremLabs](https://github.com/LoremLabs), is your ally in appreciating the contributions of open-source collaborators. This automation streamlines the process of acknowledging kudos within your codebase.
 
-## Example
+## Example Usage
 
 ```yaml
 name: Kudos for Code
-defaults:
-  run:
-    working-directory: .
 on:
   push:
-    branches: ['main']
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
   kudos:
-    name: Supporting your open source team with Kudos.
+    name: Supporting Your Open Source Teams
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
-        with: { version: 7 }
-      - uses: actions/setup-node@v3
-        with: 
-          node-version: 18
-          cache: pnpm
-          cache-dependency-path: './pnpm-lock.yaml'
-      - name: Install dependencies with pnpm
-        run: |
-          pnpm i
-        shell: bash
-      - uses: LoremLabs/kudos-for-code-action@v0.0.5
+      - uses: actions/checkout@v2
+      - uses: LoremLabs/kudos-for-code-action@v1.0.0
         with:
           search-dir: "."
           destination: "pool"
@@ -39,46 +25,124 @@ jobs:
           setler-keys: ${{ secrets.SETLER_KEYS_0 }}
           pool-storage-token: ${{ secrets.KUDOS_STORAGE_TOKEN }}
           pool-endpoint: "https://api.semicolons.com"
-          node-dev-dependencies: "true"
-
+          generate-nomerges: true
+          generate-validemails: true
+          generate-limitdepth: 2
 ```
 
 ## Inputs
 
-`search-dir` - The directory to search for package.json files. Defaults to `.`
-`destination` - Specify how to ink your kudos. Defaults to `pool`. Also supports `artifact`
-`pool-id` - The id of the pool to ink to, required for `destination: pool`
-`setler-keys` - The setler keys to use to sign the transaction, required for `destination: pool`. 
-`pool-storage-token` - The storage token to use for `destination: pool`. Must have write permission.
-`pool-endpoint` - Pool server to use to store the Kudos. Defaults to `https://api.semicolons.com`
+- `search-dir` - Locate your source code directory. Defaults to `.`
+- `destination` - Decide how kudos are allocated. Defaults to `pool`, also supports `artifact`.
+- `pool-id` - Identify the pool for kudos allocation (required for `destination: pool`).
+- `setler-keys` - Utilize Setler keys for transaction signing (required for `destination: pool`).
+- `pool-storage-token` - Employ the storage token for `destination: pool` (write permission required).
+- `pool-endpoint` - Utilize the Pool server for Kudos storage. Defaults to `https://api.semicolons.com`.
+- `generate-nomerges` - Exclude merge commits when generating Kudos from the repository. Defaults to `true`.
+- `generate-validemails` - Include only valid email addresses during Kudos generation from the repository. Defaults to `true`.
+- `generate-limitdepth` - Set the depth limit for dependency inclusion during Kudos generation from the repository. Defaults to `2`.
 
 ### `setler-keys`
 
-Create the keys with:
+Generate keys using this command:
 
 ```bash
 setler wallet keys env --filter kudos
 ```
 
-Then add to your repo secrets.
+Add these keys to your repository secrets.
 
 ### `pool-storage-token`
 
-Retrieve your storage token with:
+Retrieve the storage token with:
 
 ```bash
 setler auth delegate
 ```
 
-Then add to your repo secrets.
+Add this token to your repository secrets.
 
 ### `pool-id`
 
-To create a pool, run:
+Create a pool by running:
 
 ```bash
 setler pool create
 ```
 
-Then add to your repo secrets.
+Add the generated pool ID to your repository secrets.
 
+## Supported Package Managers
+
+Empowered by the [OSS Review Toolkit](https://github.com/oss-review-toolkit/ort), the **Kudos for Code** GitHub Action offers robust support for diverse programming languages and package managers. This integration ensures seamless attribution of kudos to contributors across different ecosystems. Below is the current list of supported package managers grouped by the programming languages they are most closely associated with:
+
+### C / C++
+
+- [Conan](https://conan.io)
+
+### Dart / Flutter
+
+- [Pub](https://pub.dev)
+
+### Go
+
+- dep
+- Glide
+- Godep
+- GoMod
+
+### Haskell
+
+- [Stack](https://docs.haskellstack.org)
+
+### Java
+
+- Gradle
+- Maven (limitations: default profile only)
+
+### JavaScript / Node.js
+
+- Bower
+- NPM (limitations: no peer dependencies)
+- PNPM (limitations: no peer dependencies)
+- Yarn 1
+- Yarn 2+
+
+### .NET
+
+- DotNet (limitations: no floating versions / ranges, no target framework)
+- NuGet (limitations: no floating versions / ranges, no target framework)
+
+### Objective-C / Swift
+
+- Carthage (limitation: no cartfile.private)
+- CocoaPods (limitations: no custom source repositories)
+- Swift Package Manager
+
+### PHP
+
+- [Composer](https://getcomposer.org)
+
+### Python
+
+- PIP
+- Pipenv
+- Poetry
+
+### Ruby
+
+- Bundler (limitations: restricted to the version available on the host)
+
+### Rust
+
+- [Cargo](https://doc.rust-lang.org/cargo)
+
+### Scala
+
+- [SBT](https://www.scala-sbt.org)
+
+### Unmanaged
+
+- This represents a unique "package manager" that efficiently handles all files which cannot be associated with any of the aforementioned package managers.
+
+Stay connected with updates to the list of supported package managers, as your project thrives in the realm of open source development.
