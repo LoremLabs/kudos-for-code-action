@@ -100,7 +100,7 @@ runs:
     - name: Set up Kudos Variables
       run: |
         echo "::group::Set up Kudos Variables"
-        echo "KUDOS_OUTFILE=${{ env.KUDOS_DIR }}/${{ env.GITHUB_RUN_ID }}.ndjson" >> $GITHUB_ENV
+        echo "KUDOS_OUTFILE=${{ env.KUDOS_DIR }}/kudos-${{ github.run_id }}.ndjson" >> $GITHUB_ENV
         echo "::endgroup::"
       shell: bash
 
@@ -198,6 +198,12 @@ runs:
           --projectname ${{ github.event.repository.name }} \
           --inputfilepath ${{ env.ORT_RESULTS_ANALYZER_PATH }} \
         > ${{ env.KUDOS_OUTFILE }} 
+
+        if [ -s ${{ env.KUDOS_OUTFILE }} ]; then
+          echo "Kudos: $(wc -l ${{ env.KUDOS_OUTFILE }})"
+        else
+          echo "Kudos: 0"
+        fi
 
         echo "::endgroup::"
       shell: bash
