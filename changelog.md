@@ -9,6 +9,12 @@ Subsections: (Added, Changed, Deprecated, Removed, Fixed, Security)
 
 ## [Unreleased]
 
+## [1.0.3]
+
+### Added
+
+ - Added artifact support
+
 ## [0.0.5]
 
 ### Changed
