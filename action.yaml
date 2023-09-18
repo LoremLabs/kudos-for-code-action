@@ -4,7 +4,7 @@ description: "Supporting your open source team..."
 inputs:
   destination:
     description: "Where to save the generated kudos. Options: artifact, pool"
-    default: pool
+    default: artifact
     required: true
   github-token:
     description: A GITHUB_TOKEN with custom permissions.
@@ -97,23 +97,10 @@ runs:
         echo "::endgroup::"
       shell: bash
 
-    - name: Set current cohort
-      run: |
-        echo "::group::Set current cohort"
-        if [ -z "$USER_COHORT" ]; then
-          echo "KUDOS_COHORT=$(date +'%Y%W')" >> $GITHUB_ENV
-        else
-          echo "KUDOS_COHORT=$USER_COHORT" >> $GITHUB_ENV
-        fi
-        echo "::endgroup::"
-      env:
-        USER_COHORT: ${{ inputs.cohort }}
-      shell: bash
-
     - name: Set up Kudos Variables
       run: |
         echo "::group::Set up Kudos Variables"
-        echo "KUDOS_OUTFILE=${{ env.KUDOS_DIR }}/${{ env.KUDOS_COHORT }}.ndjson" >> $GITHUB_ENV
+        echo "KUDOS_OUTFILE=${{ env.KUDOS_DIR }}/kudos-${{ github.run_id }}.ndjson" >> $GITHUB_ENV
         echo "::endgroup::"
       shell: bash
 
@@ -195,6 +182,28 @@ runs:
           --poolEndpoint "${{ inputs.pool-endpoint }}" \
           --validateResult="${{ inputs.ink-validateResult }}" \
           --chunkSize "${{ inputs.ink-chunkSize }}"
+
+        echo "::endgroup::"
+      shell: bash
+
+    - name: Identify Contributors and Ink Kudos via Artifacts - Kudos for Code
+      if: contains(inputs.destination, 'artifact')
+      run: |
+        echo "::group::Identify Contributors and Ink Kudos via Artifacts"
+
+        ./kudos-for-code generate \
+          --nomerges="${{ inputs.generate-nomerges }}" \
+          --validemails="${{ inputs.generate-validemails }}" \
+          --limitdepth "${{ inputs.generate-limitdepth }}" \
+          --projectname ${{ github.event.repository.name }} \
+          --inputfilepath ${{ env.ORT_RESULTS_ANALYZER_PATH }} \
+        > ${{ env.KUDOS_OUTFILE }} 
+
+        if [ -s ${{ env.KUDOS_OUTFILE }} ]; then
+          echo "Kudos: $(wc -l ${{ env.KUDOS_OUTFILE }})"
+        else
+          echo "Kudos: 0"
+        fi
 
         echo "::endgroup::"
       shell: bash
