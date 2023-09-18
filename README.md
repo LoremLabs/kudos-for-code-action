@@ -45,7 +45,7 @@ jobs:
 
 ## Supported Package Managers
 
-Empowered by the [OSS Review Toolkit](https://github.com/oss-review-toolkit/ort), the **Kudos for Code** GitHub Action offers robust support for diverse programming languages and package managers. This integration ensures seamless attribution of kudos to contributors across different ecosystems. Below is the current list of supported package managers grouped by the programming languages they are most closely associated with:
+The **Kudos for Code** GitHub Action offers robust support for diverse programming languages and package managers. This integration ensures seamless attribution of kudos to contributors across different ecosystems. Below is the current list of supported package managers grouped by the programming languages they are most closely associated with:
 
 ### C / C++
 
