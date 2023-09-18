@@ -1,8 +1,12 @@
 # Kudos for Code GitHub Action
 
-Give credit where credit is due! The **Kudos for Code** GitHub Action, crafted by [LoremLabs](https://github.com/LoremLabs), is your ally in appreciating the contributions of open-source collaborators. This automation streamlines the process of acknowledging kudos within your codebase.
+Give credit where credit is due! The **Kudos for Code** GitHub Action, crafted by [LoremLabs](https://github.com/LoremLabs), is your ally in appreciating the contributions of open-source collaborators. This automation streamlines the process of acknowledging [Kudos](https://www.kudos.community) within your codebase.
 
 ## Example Usage
+
+You can automatically install this in your repo via the Semicolons GitHub App, available after logging into [semicolons.com](https://www.semicolons.com/).
+
+To manually install this action, add the following to your workflow file `.github/workflows/kudos.yml`:
 
 ```yaml
 name: Kudos for Code
@@ -17,14 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: LoremLabs/kudos-for-code-action@v1.0.1
+      - uses: LoremLabs/kudos-for-code-action@latest
         with:
           search-dir: "."
-          destination: "pool"
-          pool-id: ${{ secrets.KUDOS_POOL_ID }}
-          setler-keys: ${{ secrets.SETLER_KEYS_0 }}
-          pool-storage-token: ${{ secrets.KUDOS_STORAGE_TOKEN }}
-          pool-endpoint: "https://api.semicolons.com"
+          destination: "artifact"
           generate-nomerges: true
           generate-validemails: true
           generate-limitdepth: 2
@@ -42,35 +42,6 @@ jobs:
 - `generate-validemails` - Include only valid email addresses during Kudos generation from the repository. Defaults to `true`.
 - `generate-limitdepth` - Set the depth limit for dependency inclusion during Kudos generation from the repository. Defaults to `2`.
 
-### `setler-keys`
-
-Generate keys using this command:
-
-```bash
-setler wallet keys env --filter kudos
-```
-
-Add these keys to your repository secrets.
-
-### `pool-storage-token`
-
-Retrieve the storage token with:
-
-```bash
-setler auth delegate
-```
-
-Add this token to your repository secrets.
-
-### `pool-id`
-
-Create a pool by running:
-
-```bash
-setler pool create
-```
-
-Add the generated pool ID to your repository secrets.
 
 ## Supported Package Managers
 
@@ -146,3 +117,42 @@ Empowered by the [OSS Review Toolkit](https://github.com/oss-review-toolkit/ort)
 - This represents a unique "package manager" that efficiently handles all files which cannot be associated with any of the aforementioned package managers.
 
 Stay connected with updates to the list of supported package managers, as your project thrives in the realm of open source development.
+
+## Setler
+
+The **Kudos for Code** GitHub Action relies on the [Setler](https://www.setler.app) app to convert Kudos into payments.
+
+### `setler-keys`
+
+Generate keys using this command:
+
+```bash
+setler wallet keys env --filter kudos
+```
+
+Add these keys to your repository secrets.
+
+### `pool-storage-token`
+
+Retrieve the storage token with:
+
+```bash
+setler auth delegate
+```
+
+Add this token to your repository secrets.
+
+### `pool-id`
+
+Create a pool by running:
+
+```bash
+setler pool create
+```
+
+Add the generated pool ID to your repository secrets.
+
+## Contact
+
+Contact via [semicolons.com](https://www.semicolons.com/contact).
+
