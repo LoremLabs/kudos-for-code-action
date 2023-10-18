@@ -209,7 +209,7 @@ runs:
       shell: bash
 
     - name: Identify Contributors from current Repo
-      if: generate-from-top-repo == 'true'
+      if: inputs.generate-from-top-repo && inputs.generate-from-top-repo != 'false'
       run: |
         authors=$(git log --format='%ae' | sort | uniq -c | sort -nr)
         total=$(echo "$authors" | awk '{ sum += $1 } END { print sum }')
