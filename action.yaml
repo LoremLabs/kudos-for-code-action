@@ -37,6 +37,9 @@ inputs:
   skip-main-package:
     description: Don't create kudos for main package.
     default: "false"
+  generate-from-top-repo:
+    description: Generate kudos from main repo contributors
+    default: "false"
   generate-nomerges:
     description: Exclude merge commits during generating Kudos from repo.
     default: true
@@ -203,6 +206,33 @@ runs:
         > ${{ env.KUDOS_OUTFILE }}
 
         echo "::endgroup::"
+      shell: bash
+
+    - name: Identify Contributors from current Repo
+      if: generate-from-top-repo == 'true'
+      run: |
+        authors=$(git log --format='%ae' | sort | uniq -c | sort -nr)
+        total=$(echo "$authors" | awk '{ sum += $1 } END { print sum }')
+        traceId=$(uuidgen | xxd -r -p | base64 | sed 's/+/-/g; s/\//_/g; s/=//g')
+        while read -r line; do
+          count=$(echo "$line" | awk '{ print $1 }')
+          email=$(echo "$line" | awk '{ print $2 }')
+          
+          # Calculate the weight for this author
+          weight=$(echo "scale=5; $count / $total * $parentWeighting" | bc)
+          weight=$(printf "%.5f" $weight)
+
+          # Generate a unique ID for this kudos
+          id=$(uuidgen | xxd -r -p | base64 | sed 's/+/-/g; s/\//_/g; s/=//g')
+
+          # Get the current timestamp in UTC
+          ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          # Output the kudos information in JSON format
+          # {"identifier":"did:kudos:email:$email","id":"XR8C4DfXjRTWykQF3xMtF2","ts":"2023-06-28T16:08:04Z","weight":1,"traceId":"XR7whJG3zbH5jFbdJpJjv8"}
+          echo "{\"identifier\":\"email:$email\",\"id\":\"$id\",\"ts\":\"$ts\",\"weight\":$weight,\"traceId\":\"$traceId\",\"type\":\"code\",\"description\":\"${{ github.event.repository.name }}\"}" >> ${{ env.KUDOS_OUTFILE }}
+
+        done <<< "$authors"
       shell: bash
 
     - name: Filter out skipped email addresses
