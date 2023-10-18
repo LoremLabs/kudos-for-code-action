@@ -41,6 +41,7 @@ jobs:
 - `generate-nomerges` - Exclude merge commits when generating Kudos from the repository. Defaults to `true`.
 - `generate-validemails` - Include only valid email addresses during Kudos generation from the repository. Defaults to `true`.
 - `generate-limitdepth` - Set the depth limit for dependency inclusion during Kudos generation from the repository. Defaults to `2`.
+- `skip-ids` - A space delimited list of ids to skip. Defaults to `""`.
 
 
 ## Supported Package Managers

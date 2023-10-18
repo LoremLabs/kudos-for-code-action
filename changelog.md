@@ -9,6 +9,12 @@ Subsections: (Added, Changed, Deprecated, Removed, Fixed, Security)
 
 ## [Unreleased]
 
+## [1.0.4]
+
+### Added
+
+ - Skip list support --skip-ids, a space delimited list of ids to skip
+
 ## [1.0.3]
 
 ### Added

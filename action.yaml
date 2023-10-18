@@ -52,6 +52,9 @@ inputs:
   ink-chunkSize:
     description: Chunk size for ink request.
     default: 1000
+  skip-ids:
+    description: "Space separated list of ids/email addresses to skip."
+    default: ""
 
 runs:
   using: composite
@@ -197,15 +200,30 @@ runs:
           --limitdepth "${{ inputs.generate-limitdepth }}" \
           --projectname ${{ github.event.repository.name }} \
           --inputfilepath ${{ env.ORT_RESULTS_ANALYZER_PATH }} \
-        > ${{ env.KUDOS_OUTFILE }} 
+        > ${{ env.KUDOS_OUTFILE }}
 
+        echo "::endgroup::"
+      shell: bash
+
+    - name: Filter out skipped email addresses
+      if: contains(inputs.destination, 'artifact')
+      run: |
+        KUDOS_SKIP_IDS="${{ inputs.skip-ids }}"
+        if [ -n "$KUDOS_SKIP_IDS" ]; then
+          grep -v -E "($(echo $KUDOS_SKIP_IDS | tr ' ' '|'))" ${{ env.KUDOS_OUTFILE }} > ${{ env.KUDOS_OUTFILE }}.tmp
+          mv ${{ env.KUDOS_OUTFILE }}.tmp ${{ env.KUDOS_OUTFILE }}
+        fi
+      shell: bash
+
+    - name: Kudos Summary
+      if: contains(inputs.destination, 'artifact')
+      run: |
         if [ -s ${{ env.KUDOS_OUTFILE }} ]; then
           echo "Kudos: $(wc -l ${{ env.KUDOS_OUTFILE }})"
         else
           echo "Kudos: 0"
         fi
 
-        echo "::endgroup::"
       shell: bash
 
     - name: Upload artifacts
