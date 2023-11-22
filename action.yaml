@@ -218,6 +218,7 @@ runs:
         authors=$(git log --format='%ae' | sort | uniq -c | sort -nr)
         total=$(echo "$authors" | awk '{ sum += $1 } END { print sum }')
         traceId=$(uuidgen | xxd -r -p | base64 | sed 's/+/-/g; s/\//_/g; s/=//g')
+        parentWeighting=1
         while read -r line; do
           count=$(echo "$line" | awk '{ print $1 }')
           email=$(echo "$line" | awk '{ print $2 }')
