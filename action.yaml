@@ -197,7 +197,7 @@ runs:
       shell: bash
 
     - name: Identify Contributors and Ink Kudos via Artifacts - Kudos for Code
-      if: contains(inputs.destination, 'artifact')
+      if: contains(inputs.destination, 'artifact') && (inputs.analyze-repo && inputs.analyze-repo != 'false')
       run: |
         echo "::group::Identify Contributors and Ink Kudos via Artifacts"
 
