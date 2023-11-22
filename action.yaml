@@ -37,7 +37,10 @@ inputs:
   skip-main-package:
     description: Don't create kudos for main package.
     default: "false"
-  generate-from-top-repo:
+  analyze-repo:
+    description: Analyze the repo code and generate Kudos from it.
+    default: true
+  generate-fromrepo:
     description: Generate kudos from main repo contributors
     default: "false"
   generate-nomerges:
@@ -164,6 +167,7 @@ runs:
         if_no_artifact_found: warn
 
     - name: Identify Dependencies - ORT
+      if: inputs.analyze-repo && inputs.analyze-repo != 'false'
       uses: oss-review-toolkit/ort-ci-github-action@v1
       with:
         image: ghcr.io/sangheestyle/ort:latest
@@ -209,7 +213,7 @@ runs:
       shell: bash
 
     - name: Identify Contributors from current Repo
-      if: inputs.generate-from-top-repo && inputs.generate-from-top-repo != 'false'
+      if: inputs.generate-fromrepo && inputs.generate-fromrepo != 'false'
       run: |
         authors=$(git log --format='%ae' | sort | uniq -c | sort -nr)
         total=$(echo "$authors" | awk '{ sum += $1 } END { print sum }')
