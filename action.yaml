@@ -215,7 +215,8 @@ runs:
     - name: Identify Contributors from current Repo
       if: inputs.generate-fromrepo && inputs.generate-fromrepo != 'false'
       run: |
-        authors=$(git log --format='%ae' | sed '/noreply/d' | sort | uniq -c | sort -nr)
+        authors=$(git log --format='%ae' | sort | uniq -c | sed '/noreply/d' | sort -nr)
+        echo "authors $authors"
         total=$(echo "$authors" | awk '{ sum += $1 } END { print sum }')
         traceId=$(uuidgen | xxd -r -p | base64 | sed 's/+/-/g; s/\//_/g; s/=//g')
         parentWeighting=1
@@ -234,7 +235,7 @@ runs:
           ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
           # Output the kudos information in JSON format
-          # {"identifier":"did:kudos:email:$email","id":"XR8C4DfXjRTWykQF3xMtF2","ts":"2023-06-28T16:08:04Z","weight":1,"traceId":"XR7whJG3zbH5jFbdJpJjv8"}
+          # {"identifier":"email:$email","id":"XR8C4DfXjRTWykQF3xMtF2","ts":"2023-06-28T16:08:04Z","weight":1,"traceId":"XR7whJG3zbH5jFbdJpJjv8"}
           echo "{\"identifier\":\"email:$email\",\"id\":\"$id\",\"ts\":\"$ts\",\"weight\":$weight,\"traceId\":\"$traceId\",\"type\":\"code\",\"description\":\"${{ github.event.repository.name }}\"}" >> ${{ env.KUDOS_OUTFILE }}
 
         done <<< "$authors"
