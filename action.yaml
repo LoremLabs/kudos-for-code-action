@@ -215,7 +215,7 @@ runs:
     - name: Identify Contributors from current Repo
       if: inputs.generate-fromrepo && inputs.generate-fromrepo != 'false'
       run: |
-        authors=$(git log --format='%ae' | grep -Ev 'noreply' | sort | uniq -c | sort -nr)
+        authors=$(git log --format='%ae' | sed '/noreply/d' | sort | uniq -c | sort -nr)
         total=$(echo "$authors" | awk '{ sum += $1 } END { print sum }')
         traceId=$(uuidgen | xxd -r -p | base64 | sed 's/+/-/g; s/\//_/g; s/=//g')
         parentWeighting=1
