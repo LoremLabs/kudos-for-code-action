@@ -20,19 +20,25 @@ jobs:
     name: Supporting Your Open Source Teams
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
       - uses: LoremLabs/kudos-for-code-action@latest
         with:
           search-dir: "."
           destination: "artifact"
           generate-nomerges: true
           generate-validemails: true
-          generate-limitdepth: 2
+          generate-limitdepth: 1
+          generate-fromrepo: true
+          analyze-repo: false
 ```
 
 ## Inputs
 
 - `search-dir` - Locate your source code directory. Defaults to `.`
+- `analyze-repo` - Do deeper analysis of repo to look at included libraries. Defaults to `true`
+- `generate-fromrepo` - Include commits from top level repo if true. Defaults to `false`
 - `destination` - Decide how kudos are allocated. Defaults to `pool`, also supports `artifact`.
 - `pool-id` - Identify the pool for kudos allocation (required for `destination: pool`).
 - `setler-keys` - Utilize Setler keys for transaction signing (required for `destination: pool`).
@@ -43,115 +49,59 @@ jobs:
 - `generate-limitdepth` - Set the depth limit for dependency inclusion during Kudos generation from the repository. Defaults to `2`.
 - `skip-ids` - A space delimited list of ids to skip. Defaults to `""`.
 
+## Monorepo / Multiple Package Usage
 
-## Supported Package Managers
+If your repo is a monorepo or includes multiple packages that should be analyzed independently, the following can be used as a starting point. Note that it assumes that your sub-repos are contained in a `packages` directory.
 
-The **Kudos for Code** GitHub Action offers robust support for diverse programming languages and package managers. This integration ensures seamless attribution of kudos to contributors across different ecosystems. Below is the current list of supported package managers grouped by the programming languages they are most closely associated with:
+```yaml
+name: Kudos for Code
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
 
-### C / C++
+jobs:
+  get-packages:
+    name: Get Monorepo Packages
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-dirs.outputs.matrix }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+      - name: Set packages
+        id: set-dirs
+        run: |
+          changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+          packages=$(echo "${changed_files}" | grep '^packages/' | cut -d'/' -f2-3 | sort -u)
 
-- [Conan](https://conan.io)
-
-### Dart / Flutter
-
-- [Pub](https://pub.dev)
-
-### Go
-
-- dep
-- Glide
-- Godep
-- GoMod
-
-### Haskell
-
-- [Stack](https://docs.haskellstack.org)
-
-### Java
-
-- Gradle
-- Maven (limitations: default profile only)
-
-### JavaScript / Node.js
-
-- Bower
-- NPM (limitations: no peer dependencies)
-- PNPM (limitations: no peer dependencies)
-- Yarn 1
-- Yarn 2+
-
-### .NET
-
-- DotNet (limitations: no floating versions / ranges, no target framework)
-- NuGet (limitations: no floating versions / ranges, no target framework)
-
-### Objective-C / Swift
-
-- Carthage (limitation: no cartfile.private)
-- CocoaPods (limitations: no custom source repositories)
-- Swift Package Manager
-
-### PHP
-
-- [Composer](https://getcomposer.org)
-
-### Python
-
-- PIP
-- Pipenv
-- Poetry
-
-### Ruby
-
-- Bundler (limitations: restricted to the version available on the host)
-
-### Rust
-
-- [Cargo](https://doc.rust-lang.org/cargo)
-
-### Scala
-
-- [SBT](https://www.scala-sbt.org)
-
-### Unmanaged
-
-- This represents a unique "package manager" that efficiently handles all files which cannot be associated with any of the aforementioned package managers.
-
-Stay connected with updates to the list of supported package managers, as your project thrives in the realm of open source development.
-
-## Setler
-
-The **Kudos for Code** GitHub Action relies on the [Setler](https://www.setler.app) app to convert Kudos into payments.
-
-### `setler-keys`
-
-Generate keys using this command:
-
-```bash
-setler wallet keys env --filter kudos
+          # Convert packages to a matrix format
+          matrix=$(echo "${packages}" | jq -R -s -c 'split("\n")[:-1]')
+          echo "::set-output name=matrix::${matrix}"
+  kudos:
+    needs: get-packages
+    name: Semicolons Kudos
+    permissions: write-all
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 2
+      matrix: 
+        directory: ${{fromJson(needs.get-packages.outputs.matrix)}}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: LoremLabs/kudos-for-code-action@latest
+        with:
+          search-dir: ${{ matrix.directory }}
+          destination: "artifact"
+          generate-nomerges: true
+          generate-validemails: true
+          generate-limitdepth: 1
+          generate-fromrepo: true
+          analyze-repo: false
+          skip-ids: ""
 ```
-
-Add these keys to your repository secrets.
-
-### `pool-storage-token`
-
-Retrieve the storage token with:
-
-```bash
-setler auth delegate
-```
-
-Add this token to your repository secrets.
-
-### `pool-id`
-
-Create a pool by running:
-
-```bash
-setler pool create
-```
-
-Add the generated pool ID to your repository secrets.
 
 ## Contact
 
